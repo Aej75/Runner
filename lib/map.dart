@@ -32,12 +32,13 @@ class _MapSampleState extends State<MapSample> {
   late double getLong = 0.0;
   double _speed = 0.0;
   double _trip = 0.0;
-  int _steps = 0;
+  int steps = 0;
   late int updatedSpeed;
   late int updatedDistance;
   late String time;
   late String _currentDate;
   late String _currentTime;
+
 
   late double initialLat;
   late double initialLong;
@@ -85,7 +86,7 @@ class _MapSampleState extends State<MapSample> {
   }
 
   List speedData = [];
-  List distanceData = [];
+
 
   late double newSpeedForStep = 0;
 
@@ -97,9 +98,11 @@ class _MapSampleState extends State<MapSample> {
       newSpeedForStep = (newSpeed * 5) / 18;
 
       if (newSpeedForStep > 1.7 && newSpeedForStep < 2.6) {
-        _steps = _steps + 1;
+        steps = steps + 1;
       } else if (newSpeedForStep > 2.6 && newSpeedForStep < 5) {
-        _steps = _steps + 2;
+        steps = steps + 2;
+      }else{
+        steps = steps + 3;
       }
     });
   }
@@ -128,7 +131,6 @@ class _MapSampleState extends State<MapSample> {
     setState(() {
       _trip += distance;
       updatedDistance = _trip.toInt();
-      distanceData.add(updatedDistance);
     });
   }
 
@@ -167,7 +169,7 @@ class _MapSampleState extends State<MapSample> {
       positionStream.cancel();
       _speed = 0.0;
       _trip = 0.0;
-      _steps = 0;
+      steps = 0;
     }
     setState(() {
       timer?.cancel();
@@ -334,15 +336,15 @@ class _MapSampleState extends State<MapSample> {
   void addDetails() async {
     await details
         .add({
-          'distance': distanceData.reduce((value, element) => value + element),
+          'distance': updatedDistance,
           'speed': speedData
               .reduce((value, element) => value > element ? value : element),
           'time': time,
-          'steps': _steps,
+          'steps': steps,
           'currentDate': _currentDate,
           'currentTime': _currentTime,
         })
-        .then((value) => print('successfully added $speedData, $distanceData'))
+        .then((value) => print('successfully added $speedData, $updatedDistance '))
         .catchError((error) {
           print('$error');
         });
@@ -447,7 +449,7 @@ class _MapSampleState extends State<MapSample> {
                                     height: 10,
                                   ),
                                   Text(
-                                    '$_steps steps',
+                                    '$steps steps',
                                     style: const TextStyle(
                                         color: kForegroundColor,
                                         fontSize: kBigFont),
@@ -682,10 +684,10 @@ class _MapSampleState extends State<MapSample> {
             );
           } else {
             return const SafeArea(
-                child: Scaffold(
-              backgroundColor: kBackgroundColor,
-              body: Center(child: CircularProgressIndicator()),
-            ));
+              child: Scaffold(
+                  backgroundColor: kBackgroundColor,
+                  bottomNavigationBar: LinearProgressIndicator()),
+            );
           }
         },
       ),

@@ -5,6 +5,7 @@ const kForegroundColor = Color(0xffF5F5F5);
 const kForeForegroundColor = Color(0xff272727);
 
 const kIconColor = Color(0xffff5b47);
+const kIconColor2 = Color(0xff00aa21);
 const kButtomNavIconColor = Color(0xffffffff);
 
 const kFooterColor = Colors.black;

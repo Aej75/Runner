@@ -31,7 +31,7 @@ class _BottomNavState extends State<BottomNav> {
     const Stats(),
     const MapSample(),
     const NotificationTab(),
-    const Account(),
+    Account(),
   ];
 
   late int _currentIndex = 0;

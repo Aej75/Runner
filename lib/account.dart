@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -36,33 +38,38 @@ class _AccountState extends State<Account> {
   var bestSpeed;
   var bestDistance;
   var bestTime;
+  var email;
 
   Future getPersonalBest() async {
-    var allList = [];
-    var individualDistance = [];
-    var individualSpeed = [];
 
-    try {
-      await details.get().then((value) => value.docs.forEach((element) {
-            allList.add(element.data());
-          }));
-      print(allList);
-      for (int i = 0; i < allList.length; i++) {
-        individualDistance.add(allList[i]["distance"]);
-        individualSpeed.add(allList[i]["speed"]);
-      }
-      bestDistance = (individualDistance
-          .reduce((value, element) => value > element ? value : element));
-      bestSpeed = (individualSpeed
-          .reduce((value, element) => value > element ? value : element));
+         var allList = [];
+         var individualDistance = [];
+         var individualSpeed = [];
 
-      return allList;
+         try {
+           await details.get().then((value) =>
+               value.docs.forEach((element) {
+                 allList.add(element.data());
+               }));
+           print(allList);
 
-    } catch (e) {
-      print(e);
-      return null;
+           for (int i = 0; i < allList.length; i++) {
+             individualDistance.add(allList[i]["distance"]);
+             individualSpeed.add(allList[i]["speed"]);
+           }
+           email = FirebaseAuth.instance.currentUser?.email == null? "No Email" : FirebaseAuth.instance.currentUser?.email;
+
+           bestDistance = (individualDistance
+               .reduce((value, element) => value > element ? value : element));
+           bestSpeed = (individualSpeed
+               .reduce((value, element) => value > element ? value : element));
+
+           return allList;
+         }catch (e) {
+           print(e);
+         }
     }
-  }
+
 
   void getIndividualDistance(List people, String personName) {
     // Find the index of person. If not found, index = -1
@@ -72,10 +79,11 @@ class _AccountState extends State<Account> {
     }
   }
 
+
   Widget build(BuildContext context) {
     return FutureBuilder(
         future: getPersonalBest(),
-        builder: (context,data){
+        builder: (context, data) {
           if (data.hasData) {
             return Scaffold(
               backgroundColor: kBackgroundColor,
@@ -118,13 +126,14 @@ class _AccountState extends State<Account> {
                           Text(
                             '${Home.firstName} ${Home.lastName}',
                             style: const TextStyle(
-                                color: kForegroundColor, fontWeight: FontWeight.bold),
+                                color: kForegroundColor,
+                                fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(
                             height: 15.00,
                           ),
                           Text(
-                            '${Home.phoneNumber} |  ${FirebaseAuth.instance.currentUser!.email}',
+                            '${Home.phoneNumber} |  $email',
                             style: const TextStyle(color: kForegroundColor),
                           ),
                           const SizedBox(
@@ -140,240 +149,6 @@ class _AccountState extends State<Account> {
                           const SizedBox(
                             height: 15.00,
                           ),
-                          // Padding(
-                          //   padding: const EdgeInsets.only(left: 10, right: 10),
-                          //   child: Column(
-                          //     children: [
-                          //       const SizedBox(
-                          //         height: 10,
-                          //       ),
-                          //       Column(
-                          //         children: [
-                          //           SizedBox(
-                          //             height: 80,
-                          //             child: Row(
-                          //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          //               children: [
-                          //                 Row(
-                          //                   children: const [
-                          //                     SizedBox(
-                          //                       height: 40,
-                          //                       width: 40,
-                          //                       // color: Colors.blue,
-                          //                       child: Icon(
-                          //                         CupertinoIcons.person,
-                          //                         size: 30,
-                          //                         color: Colors.cyan,
-                          //                       ),
-                          //                     ),
-                          //                     SizedBox(width: 10),
-                          //                     Text(
-                          //                       'Personal Information',
-                          //                       style: TextStyle(
-                          //                           fontWeight: FontWeight.bold),
-                          //                     ),
-                          //                   ],
-                          //                 ),
-                          //                 TextButton(
-                          //                     onPressed: () {},
-                          //                     child: const Icon(CupertinoIcons.forward))
-                          //               ],
-                          //             ),
-                          //           ),
-                          //           SizedBox(
-                          //             height: 80,
-                          //             child: Row(
-                          //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          //               children: [
-                          //                 Row(
-                          //                   children: const [
-                          //                     SizedBox(
-                          //                       height: 40,
-                          //                       width: 40,
-                          //                       // color: Colors.blue,
-                          //                       child: Icon(
-                          //                         CupertinoIcons.doc_plaintext,
-                          //                         size: 30,
-                          //                         color: Colors.deepPurpleAccent,
-                          //                       ),
-                          //                     ),
-                          //                     SizedBox(width: 10),
-                          //                     Text(
-                          //                       'Transaction Limit',
-                          //                       style: TextStyle(
-                          //                           fontWeight: FontWeight.bold),
-                          //                     ),
-                          //                   ],
-                          //                 ),
-                          //                 TextButton(
-                          //                     onPressed: () {},
-                          //                     child: const Icon(CupertinoIcons.forward))
-                          //               ],
-                          //             ),
-                          //           ),
-                          //           SizedBox(
-                          //             height: 80,
-                          //             child: Row(
-                          //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          //               children: [
-                          //                 Row(
-                          //                   children: const [
-                          //                     SizedBox(
-                          //                       height: 40,
-                          //                       width: 40,
-                          //                       // color: Colors.blue,
-                          //                       child: Icon(
-                          //                         Icons.account_balance_outlined,
-                          //                         size: 30,
-                          //                         color: Colors.blue,
-                          //                       ),
-                          //                     ),
-                          //                     SizedBox(width: 10),
-                          //                     Text(
-                          //                       'Link Bank Account',
-                          //                       style: TextStyle(
-                          //                           fontWeight: FontWeight.bold),
-                          //                     ),
-                          //                   ],
-                          //                 ),
-                          //                 TextButton(
-                          //                     onPressed: () {},
-                          //                     child: const Icon(CupertinoIcons.forward))
-                          //               ],
-                          //             ),
-                          //           ),
-                          //           SizedBox(
-                          //             height: 80,
-                          //             child: Row(
-                          //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          //               children: [
-                          //                 Row(
-                          //                   children: const [
-                          //                     SizedBox(
-                          //                       height: 40,
-                          //                       width: 40,
-                          //                       // color: Colors.blue,
-                          //                       child: Icon(
-                          //                         CupertinoIcons.settings,
-                          //                         size: 30,
-                          //                         color: Colors.deepOrange,
-                          //                       ),
-                          //                     ),
-                          //                     SizedBox(width: 10),
-                          //                     Text(
-                          //                       'Settings',
-                          //                       style: TextStyle(
-                          //                           fontWeight: FontWeight.bold),
-                          //                     ),
-                          //                   ],
-                          //                 ),
-                          //                 TextButton(
-                          //                     onPressed: () {},
-                          //                     child: const Icon(CupertinoIcons.forward))
-                          //               ],
-                          //             ),
-                          //           ),
-                          //           SizedBox(
-                          //             height: 80,
-                          //             child: Row(
-                          //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          //               children: [
-                          //                 Row(
-                          //                   children: const [
-                          //                     SizedBox(
-                          //                       height: 40,
-                          //                       width: 40,
-                          //                       // color: Colors.blue,
-                          //                       child: Icon(
-                          //                         CupertinoIcons.info,
-                          //                         size: 30,
-                          //                         color: Colors.purple,
-                          //                       ),
-                          //                     ),
-                          //                     SizedBox(width: 10),
-                          //                     Text(
-                          //                       'About Us',
-                          //                       style: TextStyle(
-                          //                           fontWeight: FontWeight.bold),
-                          //                     ),
-                          //                   ],
-                          //                 ),
-                          //                 TextButton(
-                          //                     onPressed: () {},
-                          //                     child: const Icon(CupertinoIcons.forward))
-                          //               ],
-                          //             ),
-                          //           ),
-                          //           SizedBox(
-                          //             height: 80,
-                          //             child: Row(
-                          //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          //               children: [
-                          //                 Row(
-                          //                   children: const [
-                          //                     SizedBox(
-                          //                       height: 40,
-                          //                       width: 40,
-                          //                       child: Icon(
-                          //                         CupertinoIcons.question_diamond,
-                          //                         size: 30,
-                          //                         color: Colors.cyan,
-                          //                       ),
-                          //                     ),
-                          //                     SizedBox(width: 10),
-                          //                     Text(
-                          //                       'Help and Support',
-                          //                       style: TextStyle(
-                          //                           fontWeight: FontWeight.bold),
-                          //                     ),
-                          //                   ],
-                          //                 ),
-                          //                 TextButton(
-                          //                     onPressed: () {},
-                          //                     child: const Icon(CupertinoIcons.forward))
-                          //               ],
-                          //             ),
-                          //           ),
-                          //           Container(
-                          //             height: 70.0,
-                          //             decoration: BoxDecoration(
-                          //               borderRadius: BorderRadius.circular(10),
-                          //               color: Colors.blue.withOpacity(0.4),
-                          //             ),
-                          //             child: Row(
-                          //               mainAxisAlignment: MainAxisAlignment.center,
-                          //               children: const [
-                          //                 Icon(CupertinoIcons.phone),
-                          //                 Text(
-                          //                   'Feel free to ask, we are ready to support.',
-                          //                   style: TextStyle(fontWeight: FontWeight.w600),
-                          //                 )
-                          //               ],
-                          //             ),
-                          //           ),
-                          //           const SizedBox(height: 30.0),
-                          //           Row(
-                          //             mainAxisAlignment: MainAxisAlignment.center,
-                          //             children: const [
-                          //               Icon(Icons.logout),
-                          //               SizedBox(
-                          //                 width: 5.0,
-                          //               ),
-                          //               Text(
-                          //                 'Log Out',
-                          //                 style: TextStyle(
-                          //                     color: Colors.red,
-                          //                     fontSize: 15,
-                          //                     fontWeight: FontWeight.w600),
-                          //               )
-                          //             ],
-                          //           ),
-                          //           const SizedBox(height: 150.0)
-                          //         ],
-                          //       )
-                          //     ],
-                          //   ),
-                          // )
                         ],
                       ),
                     ),
@@ -381,8 +156,8 @@ class _AccountState extends State<Account> {
                       height: 15,
                     ),
                     Container(
-                      padding:
-                      EdgeInsets.only(left: 15, right: 15, top: 10, bottom: 10),
+                      padding: EdgeInsets.only(
+                          left: 15, right: 15, top: 10, bottom: 10),
                       color: kBodyForegroundColor,
                       width: double.infinity,
                       child: Column(
@@ -464,7 +239,7 @@ class _AccountState extends State<Account> {
                                                 color: kIconColor,
                                               ),
                                               Text(
-                                                '$bestDistance km',
+                                                '${bestDistance/1000} km',
                                                 style: const TextStyle(
                                                     fontSize: kMediumFont,
                                                     fontWeight: FontWeight.bold,
@@ -478,240 +253,6 @@ class _AccountState extends State<Account> {
                               ),
                             ],
                           )
-                          // Padding(
-                          //   padding: const EdgeInsets.only(left: 10, right: 10),
-                          //   child: Column(
-                          //     children: [
-                          //       const SizedBox(
-                          //         height: 10,
-                          //       ),
-                          //       Column(
-                          //         children: [
-                          //           SizedBox(
-                          //             height: 80,
-                          //             child: Row(
-                          //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          //               children: [
-                          //                 Row(
-                          //                   children: const [
-                          //                     SizedBox(
-                          //                       height: 40,
-                          //                       width: 40,
-                          //                       // color: Colors.blue,
-                          //                       child: Icon(
-                          //                         CupertinoIcons.person,
-                          //                         size: 30,
-                          //                         color: Colors.cyan,
-                          //                       ),
-                          //                     ),
-                          //                     SizedBox(width: 10),
-                          //                     Text(
-                          //                       'Personal Information',
-                          //                       style: TextStyle(
-                          //                           fontWeight: FontWeight.bold),
-                          //                     ),
-                          //                   ],
-                          //                 ),
-                          //                 TextButton(
-                          //                     onPressed: () {},
-                          //                     child: const Icon(CupertinoIcons.forward))
-                          //               ],
-                          //             ),
-                          //           ),
-                          //           SizedBox(
-                          //             height: 80,
-                          //             child: Row(
-                          //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          //               children: [
-                          //                 Row(
-                          //                   children: const [
-                          //                     SizedBox(
-                          //                       height: 40,
-                          //                       width: 40,
-                          //                       // color: Colors.blue,
-                          //                       child: Icon(
-                          //                         CupertinoIcons.doc_plaintext,
-                          //                         size: 30,
-                          //                         color: Colors.deepPurpleAccent,
-                          //                       ),
-                          //                     ),
-                          //                     SizedBox(width: 10),
-                          //                     Text(
-                          //                       'Transaction Limit',
-                          //                       style: TextStyle(
-                          //                           fontWeight: FontWeight.bold),
-                          //                     ),
-                          //                   ],
-                          //                 ),
-                          //                 TextButton(
-                          //                     onPressed: () {},
-                          //                     child: const Icon(CupertinoIcons.forward))
-                          //               ],
-                          //             ),
-                          //           ),
-                          //           SizedBox(
-                          //             height: 80,
-                          //             child: Row(
-                          //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          //               children: [
-                          //                 Row(
-                          //                   children: const [
-                          //                     SizedBox(
-                          //                       height: 40,
-                          //                       width: 40,
-                          //                       // color: Colors.blue,
-                          //                       child: Icon(
-                          //                         Icons.account_balance_outlined,
-                          //                         size: 30,
-                          //                         color: Colors.blue,
-                          //                       ),
-                          //                     ),
-                          //                     SizedBox(width: 10),
-                          //                     Text(
-                          //                       'Link Bank Account',
-                          //                       style: TextStyle(
-                          //                           fontWeight: FontWeight.bold),
-                          //                     ),
-                          //                   ],
-                          //                 ),
-                          //                 TextButton(
-                          //                     onPressed: () {},
-                          //                     child: const Icon(CupertinoIcons.forward))
-                          //               ],
-                          //             ),
-                          //           ),
-                          //           SizedBox(
-                          //             height: 80,
-                          //             child: Row(
-                          //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          //               children: [
-                          //                 Row(
-                          //                   children: const [
-                          //                     SizedBox(
-                          //                       height: 40,
-                          //                       width: 40,
-                          //                       // color: Colors.blue,
-                          //                       child: Icon(
-                          //                         CupertinoIcons.settings,
-                          //                         size: 30,
-                          //                         color: Colors.deepOrange,
-                          //                       ),
-                          //                     ),
-                          //                     SizedBox(width: 10),
-                          //                     Text(
-                          //                       'Settings',
-                          //                       style: TextStyle(
-                          //                           fontWeight: FontWeight.bold),
-                          //                     ),
-                          //                   ],
-                          //                 ),
-                          //                 TextButton(
-                          //                     onPressed: () {},
-                          //                     child: const Icon(CupertinoIcons.forward))
-                          //               ],
-                          //             ),
-                          //           ),
-                          //           SizedBox(
-                          //             height: 80,
-                          //             child: Row(
-                          //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          //               children: [
-                          //                 Row(
-                          //                   children: const [
-                          //                     SizedBox(
-                          //                       height: 40,
-                          //                       width: 40,
-                          //                       // color: Colors.blue,
-                          //                       child: Icon(
-                          //                         CupertinoIcons.info,
-                          //                         size: 30,
-                          //                         color: Colors.purple,
-                          //                       ),
-                          //                     ),
-                          //                     SizedBox(width: 10),
-                          //                     Text(
-                          //                       'About Us',
-                          //                       style: TextStyle(
-                          //                           fontWeight: FontWeight.bold),
-                          //                     ),
-                          //                   ],
-                          //                 ),
-                          //                 TextButton(
-                          //                     onPressed: () {},
-                          //                     child: const Icon(CupertinoIcons.forward))
-                          //               ],
-                          //             ),
-                          //           ),
-                          //           SizedBox(
-                          //             height: 80,
-                          //             child: Row(
-                          //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          //               children: [
-                          //                 Row(
-                          //                   children: const [
-                          //                     SizedBox(
-                          //                       height: 40,
-                          //                       width: 40,
-                          //                       child: Icon(
-                          //                         CupertinoIcons.question_diamond,
-                          //                         size: 30,
-                          //                         color: Colors.cyan,
-                          //                       ),
-                          //                     ),
-                          //                     SizedBox(width: 10),
-                          //                     Text(
-                          //                       'Help and Support',
-                          //                       style: TextStyle(
-                          //                           fontWeight: FontWeight.bold),
-                          //                     ),
-                          //                   ],
-                          //                 ),
-                          //                 TextButton(
-                          //                     onPressed: () {},
-                          //                     child: const Icon(CupertinoIcons.forward))
-                          //               ],
-                          //             ),
-                          //           ),
-                          //           Container(
-                          //             height: 70.0,
-                          //             decoration: BoxDecoration(
-                          //               borderRadius: BorderRadius.circular(10),
-                          //               color: Colors.blue.withOpacity(0.4),
-                          //             ),
-                          //             child: Row(
-                          //               mainAxisAlignment: MainAxisAlignment.center,
-                          //               children: const [
-                          //                 Icon(CupertinoIcons.phone),
-                          //                 Text(
-                          //                   'Feel free to ask, we are ready to support.',
-                          //                   style: TextStyle(fontWeight: FontWeight.w600),
-                          //                 )
-                          //               ],
-                          //             ),
-                          //           ),
-                          //           const SizedBox(height: 30.0),
-                          //           Row(
-                          //             mainAxisAlignment: MainAxisAlignment.center,
-                          //             children: const [
-                          //               Icon(Icons.logout),
-                          //               SizedBox(
-                          //                 width: 5.0,
-                          //               ),
-                          //               Text(
-                          //                 'Log Out',
-                          //                 style: TextStyle(
-                          //                     color: Colors.red,
-                          //                     fontSize: 15,
-                          //                     fontWeight: FontWeight.w600),
-                          //               )
-                          //             ],
-                          //           ),
-                          //           const SizedBox(height: 150.0)
-                          //         ],
-                          //       )
-                          //     ],
-                          //   ),
-                          // )
                         ],
                       ),
                     ),
@@ -719,12 +260,12 @@ class _AccountState extends State<Account> {
                 ),
               ),
             );
-          } else{
+          } else {
             return const SafeArea(
-                child: Scaffold(
+              child: Scaffold(
                   backgroundColor: kBackgroundColor,
-                  body: Center(child: CircularProgressIndicator()),
-                ));
+                  bottomNavigationBar: LinearProgressIndicator()),
+            );
           }
         });
   }
