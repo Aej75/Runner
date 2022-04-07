@@ -4,7 +4,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:fyp2/functions/constants.dart';
+import 'bottomNavBar.dart';
 import 'functions/auth.dart';
+import 'home.dart';
 import 'main.dart';
 
 class Login extends StatefulWidget {
@@ -156,9 +158,23 @@ class _LoginState extends State<Login> {
     }
   }
 
+  checkIfLoggedIn(){
+    if(Home.firstName == "Guest" || FirebaseAuth.instance.currentUser != null){
+      return false;
+    }else{
+      return true;
+    }
+  }
+
+  @override
+  void initState() {
+    checkIfLoggedIn();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
+    if(checkIfLoggedIn()){return WillPopScope(
       onWillPop: () async => false,
       child: SafeArea(
           child: Scaffold(
@@ -179,7 +195,7 @@ class _LoginState extends State<Login> {
               ),
             ),
           )),
-    );
+    );}else{return const BottomNavBar();}
   }
 
   List<Widget> buildInputs() {

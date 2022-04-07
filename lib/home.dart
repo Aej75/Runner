@@ -4,10 +4,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:fyp2/stats.dart';
 import 'functions/constants.dart';
 import 'functions/tapped.dart';
 import 'package:geolocator/geolocator.dart';
+
+import 'main.dart';
 
 class Home extends StatefulWidget {
 
@@ -27,45 +30,82 @@ class _HomeState extends State<Home> {
   FirebaseAuth auth = FirebaseAuth.instance;
 
   getUserName() {
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(auth.currentUser?.uid == null ? "default" : auth.currentUser!.uid)
+        .get()
+        .then((DocumentSnapshot documentSnapshot) {
+      if (documentSnapshot.exists) {
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .get()
+            .then((DocumentSnapshot documentSnapshot) {
+          String fName = documentSnapshot.get(FieldPath(['firstName']));
+          String lName = documentSnapshot.get(FieldPath(['lastName']));
+          String phoneNum = documentSnapshot.get(FieldPath(['phoneNumber']));
 
-      FirebaseFirestore.instance
-          .collection('users')
-          .doc(auth.currentUser?.uid == null ? "default" : auth.currentUser!.uid)
-          .get()
-          .then((DocumentSnapshot documentSnapshot) {
-        if (documentSnapshot.exists) {
-          FirebaseFirestore.instance
-              .collection('users')
-              .doc(FirebaseAuth.instance.currentUser!.uid)
-              .get()
-              .then((DocumentSnapshot documentSnapshot) {
-            String fName = documentSnapshot.get(FieldPath(['firstName']));
-            String lName = documentSnapshot.get(FieldPath(['lastName']));
-            String phoneNum = documentSnapshot.get(FieldPath(['phoneNumber']));
-
-            setState(() {
-              Home.firstName = fName;
-              Home.lastName = lName;
-              Home.phoneNumber = phoneNum;
-            });
-          });
-
-          print('exist');
-        } else {
-          print('doesnot exist');
           setState(() {
-            Home.firstName = "Guest";
-            Home.lastName = "";
-            Home.phoneNumber = "No phone number";
+            Home.firstName = fName;
+            Home.lastName = lName;
+            Home.phoneNumber = phoneNum;
           });
-        }
-      });
+        });
+
+        print('exist');
+      } else {
+        print('doesnot exist');
+        setState(() {
+          Home.firstName = "Guest";
+          Home.lastName = "";
+          Home.phoneNumber = "No phone number";
+        });
+      }
+    });
   }
+
+
+  storeAndCheckWelcomeMessage() async {
+    FirebaseFirestore.instance
+        .collection('notification')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get()
+        .then((DocumentSnapshot documentSnapshot) async {
+      if (documentSnapshot.exists) {
+        return null;
+      } else {
+        var firebaseUser = FirebaseAuth.instance.currentUser!.uid;
+        await FirebaseFirestore.instance.collection("notification").doc(firebaseUser).set(
+            {'nUsername': 'Hello ${Home.firstName}', 'welcomeMessage': 'Welcome To the Runner App'});
+        showNotification();
+      }
+    });
+  }
+
 
   @override
   void initState() {
+    Future.delayed(const Duration(seconds: 1), () {
+      storeAndCheckWelcomeMessage();
+    });
+
     getUserName();
     super.initState();
+  }
+
+  showNotification() {
+      flutterLocalNotificationsPlugin.show(
+          0, "Hello ${Home.firstName}", "Welcome to the Runner App",
+          NotificationDetails(
+              android: AndroidNotificationDetails(
+                  channel.id,
+                  channel.name,
+                  importance: Importance.high,
+                  color: Colors.blue,
+                  playSound: true,
+                  icon: '@mipmap/ic_launcher'
+              )
+          ));
   }
 
   @override
@@ -101,7 +141,7 @@ class _HomeState extends State<Home> {
                   children: [
                     const Text('Runner',
                         style:
-                            TextStyle(fontSize: 70, color: kForegroundColor)),
+                        TextStyle(fontSize: 70, color: kForegroundColor)),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

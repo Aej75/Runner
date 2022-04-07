@@ -19,6 +19,7 @@ class Account extends StatefulWidget {
 class _AccountState extends State<Account> {
   @override
   void initState() {
+    timerMethod();
     getPersonalBest();
     super.initState();
   }
@@ -51,7 +52,6 @@ class _AccountState extends State<Account> {
                value.docs.forEach((element) {
                  allList.add(element.data());
                }));
-           print(allList);
 
            for (int i = 0; i < allList.length; i++) {
              individualDistance.add(allList[i]["distance"]);
@@ -78,6 +78,14 @@ class _AccountState extends State<Account> {
       print('Using indexWhere: ${people[index]}');
     }
   }
+  late String value;
+
+  timerMethod(){
+    var timerData = Timer.periodic(Duration(seconds: 5), (timer){
+      getPersonalBest();
+    });
+    return timerData;
+  }
 
 
   Widget build(BuildContext context) {
@@ -101,7 +109,7 @@ class _AccountState extends State<Account> {
                 padding: const EdgeInsets.only(left: 15, right: 15, top: 5),
                 child: Column(
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       height: 15,
                     ),
                     Container(
@@ -260,12 +268,19 @@ class _AccountState extends State<Account> {
                 ),
               ),
             );
-          } else {
+          } else if(timerMethod() == null){
             return const SafeArea(
               child: Scaffold(
                   backgroundColor: kBackgroundColor,
                   bottomNavigationBar: LinearProgressIndicator()),
             );
+          }else{
+            return const SafeArea(
+              child: Scaffold(
+                  backgroundColor: kBackgroundColor,
+                  bottomNavigationBar: Text('No data')),
+            );
+
           }
         });
   }
