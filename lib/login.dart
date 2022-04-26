@@ -105,21 +105,6 @@ class _LoginState extends State<Login> {
         var snackBar = SnackBar(content: Text('Error $e'));
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
-      // on FirebaseAuthException catch (e) {
-      //   if (e.code == 'user-not-found') {
-      //     var snackBar = const SnackBar(content: Text('No user found for that email.'));
-      //     ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      //
-      //   } else if (e.code == 'wrong-password') {
-      //     var snackBar = const SnackBar(content: Text('Wrong password provided for that user.'));
-      //     ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      //
-      //   }
-      // }
-
-      // var snackBar = SnackBar(content: Text('Error $e'));
-      // ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
     }
   }
 

@@ -10,25 +10,26 @@ import 'functions/auth.dart';
 import 'home.dart';
 import 'login.dart';
 
-
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
     'high_importance_channel', 'High Importance Notifications',
     importance: Importance.high, playSound: true);
-
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   print('Big message: ${message.messageId}');
 }
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+FlutterLocalNotificationsPlugin();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-  await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.createNotificationChannel(channel);
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(channel);
 
   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
     alert: true,
@@ -46,7 +47,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(routes: {
-      '/': (context) => Login(auth: Auth(),),
+      '/': (context) => Login(
+            auth: Auth(),
+          ),
       '/home': (context) => Home(),
       '/map': (context) => const MapSample(),
       '/stats': (context) => const Stats(),
@@ -59,8 +62,6 @@ class MyApp extends StatelessWidget {
 //   debugShowCheckedModeBanner: false,
 //   home: HomePage(),
 // );
-
-
 
 // home: Runner(auth: Auth(),));
 // (auth: Auth()),
@@ -106,8 +107,4 @@ class MyApp extends StatelessWidget {
 //   }
 // }
 
-enum FormType{
-  login,
-  register
-}
-
+enum FormType { login, register }

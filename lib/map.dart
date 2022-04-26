@@ -38,6 +38,7 @@ class _MapSampleState extends State<MapSample> {
   late String time;
   late String _currentDate;
   late String _currentTime;
+  late String updatedSteps;
 
 
   late double initialLat;
@@ -99,10 +100,13 @@ class _MapSampleState extends State<MapSample> {
 
       if (newSpeedForStep > 1.7 && newSpeedForStep < 2.6) {
         steps = steps + 1;
+        updatedSteps = steps.toString();
       } else if (newSpeedForStep > 2.6 && newSpeedForStep < 5) {
         steps = steps + 2;
+        updatedSteps = steps.toString();
       }else{
         steps = steps + 3;
+        updatedSteps = steps.toString();
       }
     });
   }
@@ -114,17 +118,6 @@ class _MapSampleState extends State<MapSample> {
         '${now.year.toString()}-${now.month.toString()}-${now.day.toString()}';
     _currentTime = '${now.hour.toString()}:${now.minute}';
 
-    // return Container(
-    //   height: 22,
-    //   width: 65,
-    //   color: kBodyForegroundColor,
-    //   child: Center(
-    //     child: Text(
-    //       '${now.year.toString()}-${now.month.toString()}-${now.day.toString()}',
-    //       style: const TextStyle(color: kForegroundColor, fontSize: 17),
-    //     ),
-    //   ),
-    // );
   }
 
   void _totalDistance(double distance) {
@@ -209,6 +202,8 @@ class _MapSampleState extends State<MapSample> {
 
     initialLat = currentPosition.latitude;
     initialLong = currentPosition.longitude;
+
+    print('Latitude = $getLat Longitude = $getLong');
 
     return currentPosition;
   }
@@ -340,7 +335,7 @@ class _MapSampleState extends State<MapSample> {
           'speed': speedData
               .reduce((value, element) => value > element ? value : element),
           'time': time,
-          'steps': steps,
+          'steps': updatedSteps,
           'currentDate': _currentDate,
           'currentTime': _currentTime,
         })

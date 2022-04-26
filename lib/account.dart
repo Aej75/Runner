@@ -5,12 +5,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fyp2/functions/constants.dart';
-import 'package:fyp2/functions/tapped.dart';
 import 'package:fyp2/home.dart';
-import 'package:fyp2/stats.dart';
 
 class Account extends StatefulWidget {
   const Account({Key? key}) : super(key: key);
+
+  static var bestSpeed;
+  static var bestDistance;
+  static var bestTime;
+  static var email;
 
   @override
   _AccountState createState() => _AccountState();
@@ -19,7 +22,6 @@ class Account extends StatefulWidget {
 class _AccountState extends State<Account> {
   @override
   void initState() {
-    timerMethod();
     getPersonalBest();
     super.initState();
   }
@@ -36,39 +38,34 @@ class _AccountState extends State<Account> {
           ? "default"
           : FirebaseAuth.instance.currentUser!.uid);
 
-  var bestSpeed;
-  var bestDistance;
-  var bestTime;
-  var email;
-
   Future getPersonalBest() async {
+    var allList = [];
+    var individualDistance = [];
+    var individualSpeed = [];
 
-         var allList = [];
-         var individualDistance = [];
-         var individualSpeed = [];
+    try {
+      await details.get().then((value) => value.docs.forEach((element) {
+            allList.add(element.data());
+          }));
 
-         try {
-           await details.get().then((value) =>
-               value.docs.forEach((element) {
-                 allList.add(element.data());
-               }));
+      for (int i = 0; i < allList.length; i++) {
+        individualDistance.add(allList[i]["distance"]);
+        individualSpeed.add(allList[i]["speed"]);
+      }
+      Account.email = FirebaseAuth.instance.currentUser?.email == null
+          ? "No Email"
+          : FirebaseAuth.instance.currentUser?.email;
 
-           for (int i = 0; i < allList.length; i++) {
-             individualDistance.add(allList[i]["distance"]);
-             individualSpeed.add(allList[i]["speed"]);
-           }
-           email = FirebaseAuth.instance.currentUser?.email == null? "No Email" : FirebaseAuth.instance.currentUser?.email;
+      Account.bestDistance = (individualDistance
+          .reduce((value, element) => value > element ? value : element));
+      Account.bestSpeed = (individualSpeed
+          .reduce((value, element) => value > element ? value : element));
 
-           bestDistance = (individualDistance
-               .reduce((value, element) => value > element ? value : element));
-           bestSpeed = (individualSpeed
-               .reduce((value, element) => value > element ? value : element));
-
-           return allList;
-         }catch (e) {
-           print(e);
-         }
+      return allList;
+    } catch (e) {
+      print(e);
     }
+  }
 
 
   void getIndividualDistance(List people, String personName) {
@@ -78,15 +75,8 @@ class _AccountState extends State<Account> {
       print('Using indexWhere: ${people[index]}');
     }
   }
+
   late String value;
-
-  timerMethod(){
-    var timerData = Timer.periodic(Duration(seconds: 5), (timer){
-      getPersonalBest();
-    });
-    return timerData;
-  }
-
 
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -141,7 +131,7 @@ class _AccountState extends State<Account> {
                             height: 15.00,
                           ),
                           Text(
-                            '${Home.phoneNumber} |  $email',
+                            '${Home.phoneNumber} |  ${Account.email}',
                             style: const TextStyle(color: kForegroundColor),
                           ),
                           const SizedBox(
@@ -190,75 +180,113 @@ class _AccountState extends State<Account> {
                                   children: [
                                     Expanded(
                                         child: Container(
-                                          color: kForeForegroundColor,
-                                          child: Column(
-                                            mainAxisAlignment:
+                                      color: kForeForegroundColor,
+                                      child: Column(
+                                        mainAxisAlignment:
                                             MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              const Icon(
-                                                CupertinoIcons.speedometer,
-                                                size: 35,
-                                                color: kIconColor,
-                                              ),
-                                              Text(
-                                                '$bestSpeed kmph',
-                                                style: const TextStyle(
-                                                    fontSize: kMediumFont,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: kForegroundColor),
-                                              )
-                                            ],
+                                        children: [
+                                          const Icon(
+                                            CupertinoIcons.speedometer,
+                                            size: 35,
+                                            color: kIconColor,
                                           ),
-                                        )),
+                                          Text(
+                                            '${Account.bestSpeed} kmph',
+                                            style: const TextStyle(
+                                                fontSize: kMediumFont,
+                                                fontWeight: FontWeight.bold,
+                                                color: kForegroundColor),
+                                          )
+                                        ],
+                                      ),
+                                    )),
                                     const SizedBox(width: 5),
+                                    // Expanded(
+                                    //     child: Container(
+                                    //       color: kForeForegroundColor,
+                                    //       child: Column(
+                                    //         mainAxisAlignment:
+                                    //         MainAxisAlignment.spaceEvenly,
+                                    //         children: const [
+                                    //           Icon(
+                                    //             CupertinoIcons.timer,
+                                    //             size: 35,
+                                    //             color: kIconColor,
+                                    //           ),
+                                    //           Text(
+                                    //             '00:00 hr',
+                                    //             style: TextStyle(
+                                    //                 fontSize: kMediumFont,
+                                    //                 fontWeight: FontWeight.bold,
+                                    //                 color: kForegroundColor),
+                                    //           )
+                                    //         ],
+                                    //       ),
+                                    //     )),
+                                    // const SizedBox(width: 5),
                                     Expanded(
                                         child: Container(
-                                          color: kForeForegroundColor,
-                                          child: Column(
-                                            mainAxisAlignment:
+                                      color: kForeForegroundColor,
+                                      child: Column(
+                                        mainAxisAlignment:
                                             MainAxisAlignment.spaceEvenly,
-                                            children: const [
-                                              Icon(
-                                                CupertinoIcons.timer,
-                                                size: 35,
-                                                color: kIconColor,
-                                              ),
-                                              Text(
-                                                '00:00 hr',
-                                                style: TextStyle(
-                                                    fontSize: kMediumFont,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: kForegroundColor),
-                                              )
-                                            ],
+                                        children: [
+                                          const Icon(
+                                            Icons.directions_run_sharp,
+                                            size: 35,
+                                            color: kIconColor,
                                           ),
-                                        )),
-                                    const SizedBox(width: 5),
-                                    Expanded(
-                                        child: Container(
-                                          color: kForeForegroundColor,
-                                          child: Column(
-                                            mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              const Icon(
-                                                Icons.directions_run_sharp,
-                                                size: 35,
-                                                color: kIconColor,
-                                              ),
-                                              Text(
-                                                '${bestDistance/1000} km',
-                                                style: const TextStyle(
-                                                    fontSize: kMediumFont,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: kForegroundColor),
-                                              )
-                                            ],
-                                          ),
-                                        )),
+                                          Text(
+                                            '${Account.bestDistance / 1000} km',
+                                            style: const TextStyle(
+                                                fontSize: kMediumFont,
+                                                fontWeight: FontWeight.bold,
+                                                color: kForegroundColor),
+                                          )
+                                        ],
+                                      ),
+                                    )),
                                   ],
                                 ),
                               ),
+                              SizedBox(
+                                height: 150,
+                              ),
+                              GestureDetector(
+                                onTap: (){
+                                  FirebaseAuth.instance.signOut();
+                                  Navigator.pushNamed(context, '/');
+                                  Home.firstName = "";
+                                  Home.lastName = "";
+                                  Home.phoneNumber = "";
+                                  setState(() {
+                                    Home.Noti = true;
+                                  });
+                                },
+                                child: Container(
+                                  color: kForeForegroundColor,
+                                  height: 50.0,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: const [
+                                      Icon(
+                                        Icons.logout,
+                                        color: Colors.red,
+                                      ),
+                                      SizedBox(
+                                        width: 15,
+                                      ),
+                                      Text(
+                                        "Logout",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: kSmallFont,
+                                            color: kForegroundColor),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
                             ],
                           )
                         ],
@@ -268,19 +296,12 @@ class _AccountState extends State<Account> {
                 ),
               ),
             );
-          } else if(timerMethod() == null){
-            return const SafeArea(
-              child: Scaffold(
-                  backgroundColor: kBackgroundColor,
-                  bottomNavigationBar: LinearProgressIndicator()),
-            );
-          }else{
+          } else {
             return const SafeArea(
               child: Scaffold(
                   backgroundColor: kBackgroundColor,
                   bottomNavigationBar: Text('No data')),
             );
-
           }
         });
   }

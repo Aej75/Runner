@@ -3,8 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'account.dart';
 import 'functions/constants.dart';
 import 'functions/tapped.dart';
+import 'home.dart';
 
 class NotificationTab extends StatelessWidget {
   const NotificationTab({Key? key}) : super(key: key);
@@ -26,8 +28,10 @@ class _notiState extends State<noti> {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   FirebaseAuth auth = FirebaseAuth.instance;
 
-  CollectionReference details =
-      FirebaseFirestore.instance.collection('notification');
+  CollectionReference details = FirebaseFirestore.instance.collection(
+      (FirebaseAuth.instance.currentUser?.uid == null)
+          ? "notiDefault"
+          : 'noti${FirebaseAuth.instance.currentUser!.uid}');
 
   List itemList = [];
   List newList = [];
@@ -35,15 +39,18 @@ class _notiState extends State<noti> {
   late String _notiTitle = "";
   late String _notiMessage = "";
 
+
   //then((value) => value.docs.forEach((element) {
   //         itemList.add(element.data());
   //       }));
 
-  Future getDetails() async {
+  Future getWelcomeDetails() async {
     try {
       FirebaseFirestore.instance
-          .collection('notification')
-          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection('WelcomeNotification')
+          .doc(FirebaseAuth.instance.currentUser?.uid == null
+          ? 'default'
+          : FirebaseAuth.instance.currentUser!.uid)
           .get()
           .then((DocumentSnapshot documentSnapshot) {
         if (documentSnapshot.exists) {
@@ -55,6 +62,7 @@ class _notiState extends State<noti> {
             _notiTitle = title;
             _notiMessage = message;
           });
+          print(_notiTitle + _notiMessage);
         } else {
           print('Document does not exist on the database');
         }
@@ -65,14 +73,36 @@ class _notiState extends State<noti> {
     }
   }
 
+
+
+
+  Future getAllNotification() async {
+    try {
+      FirebaseFirestore.instance
+          .collection(FirebaseAuth.instance.currentUser?.uid == null
+          ? 'notiDefault'
+          : 'noti${FirebaseAuth.instance.currentUser!.uid}')
+          .get().then((value) => itemList.forEach((element) {
+        itemList.add(element.data());
+      }));
+      print(itemList);
+      return itemList;
+    } catch (e) {
+      print(e);
+      return null;
+    }
+  }
   @override
   void initState() {
+
+    getWelcomeDetails();
+    getAllNotification();
+    fetchDetailList();
     super.initState();
-    getDetails();
   }
 
   fetchDetailList() async {
-    dynamic resultant = await getDetails();
+    dynamic resultant = await getAllNotification();
 
     if (resultant == null) {
       if (kDebugMode) {
@@ -81,6 +111,7 @@ class _notiState extends State<noti> {
     } else {
       setState(() {
         newList = resultant;
+        print(newList);
       });
     }
   }
@@ -92,6 +123,11 @@ class _notiState extends State<noti> {
       return Text(newList[index]['user_ID']);
     }
   }
+
+  getTopSpeed(){
+
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -110,61 +146,38 @@ class _notiState extends State<noti> {
           automaticallyImplyLeading: false,
         ),
         body: SingleChildScrollView(
-          child: Column(children: [
-            const SizedBox(
-              height: 10.0,
-            ),
-            const SizedBox(
-              height: 10.0,
-            ),
-            SizedBox(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(
-                    height: 10.0,
-                  ),
-                  Card(
-                    color: kBodyForegroundColor,
-                    child: SizedBox(
-                      height: 75,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Column(
+          child: Card(
+            color: kWaterColor,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 20),
+              child: SizedBox(
+                height: 75,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Column(
-                                children: [
-                                  Text(
-                                    _notiTitle,
-                                    style: const TextStyle(
-                                        fontSize: kBigFont,
-                                        color: kForegroundColor),
-                                  ),
-                                  const SizedBox(
-                                    height: 5,
-                                  ),
-                                  Text(
-                                    _notiMessage,
-                                    style: const TextStyle(
-                                        fontSize: kSmallStatFont,
-                                        color: kForegroundColor),
-                                  ),
-                                ],
+                              Text(
+                                '$_notiTitle $_notiMessage',
+                                style: const TextStyle(
+                                    fontSize: kSmallFont,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xff002c2b)),
                               ),
                             ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ),
-                  const SizedBox(
-                    height: 10.0,
-                  )
-                ],
+                  ],
+                ),
               ),
             ),
-          ]),
+          ),
         ),
       ),
     );
