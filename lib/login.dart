@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -75,8 +77,23 @@ class _LoginState extends State<Login> {
     }
   }
 
+
+  Future<bool> checkInternet() async{
+    try{
+      final result = await InternetAddress.lookup('google.com');
+      if(result.isNotEmpty && result[0].rawAddress.isNotEmpty){
+        print('Internet connected');
+        return true;
+      }
+    }on SocketException catch(e){
+      print(e);
+      return false;
+    }
+    return true;
+  }
+
   void validateAndSubmit() async {
-    if (validateAndSave()) {
+    if (validateAndSave() && await checkInternet()) {
       try {
         if (_formType == FormType.login) {
           await widget.auth.signInWithEmailAndPassword(_email, _password);
@@ -134,6 +151,8 @@ class _LoginState extends State<Login> {
       return null;
     }
   }
+
+
 
   String? validateName(value) {
     if (value.isEmpty) {

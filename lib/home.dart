@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:fyp2/notification.dart';
 import 'account.dart';
 import 'functions/constants.dart';
 import 'main.dart';
@@ -31,35 +30,6 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   FirebaseAuth auth = FirebaseAuth.instance;
-
-  // CollectionReference details = FirebaseFirestore.instance.collection(
-  //     (FirebaseAuth.instance.currentUser?.uid == null)
-  //         ? "notiDefault"
-  //         : 'noti${FirebaseAuth.instance.currentUser!.uid}');
-  //
-  // void addNotiDetails() async {
-  //   if (Home.Noti == true) {
-  //     await details
-  //         .add({
-  //           'Title': Home.title,
-  //           'Description': Home.description,
-  //         })
-  //         .then((value) => print('successfully added'))
-  //         .catchError((error) {
-  //           print('$error');
-  //         });
-  //   }
-  // }
-  //
-  // checkBestSpeed() {
-  //   if (bestSpeed == null) {
-  //     return null;
-  //   } else {
-  //     Home.title = 'Top Speed';
-  //     Home.description = 'Your top personal best speed is $bestSpeed';
-  //   }
-  // }
-
   checkBestDistance() {
     if (Account.bestDistance == null) {
       return null;
@@ -85,7 +55,6 @@ class _HomeState extends State<Home> {
           String lName = documentSnapshot.get(FieldPath(const ['lastName']));
           String phoneNum =
               documentSnapshot.get(FieldPath(const ['phoneNumber']));
-
           setState(() {
             Home.firstName = fName;
             Home.lastName = lName;
@@ -282,38 +251,6 @@ class _HomeState extends State<Home> {
     });
     }
   }
-
-  // getGlass() {
-  //   FirebaseFirestore.instance
-  //       .collection(auth.currentUser?.uid == null ? "default" : auth.currentUser!.uid)
-  //       .doc()
-  //       .get()
-  //       .then((DocumentSnapshot documentSnapshot) {
-  //     if (documentSnapshot.exists) {
-  //       FirebaseFirestore.instance
-  //           .collection(auth.currentUser?.uid == null ? "default" : auth.currentUser!.uid)
-  //           .doc()
-  //           .get()
-  //           .then((DocumentSnapshot documentSnapshot) {
-  //         int glass = documentSnapshot.get(FieldPath(const ['glass']));
-  //         print(glass);
-  //
-  //         setState(() {
-  //
-  //         });
-  //       });
-  //
-  //       print('water exist');
-  //     } else {
-  //       print('water does not exist');
-  //       // setState(() {
-  //       //   Home.firstName = "Guest";
-  //       //   Home.lastName = "";
-  //       //   Home.phoneNumber = "No phone number";
-  //       // });
-  //     }
-  //   });
-  // }
 
   late String _currentDate;
 

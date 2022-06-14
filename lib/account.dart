@@ -201,29 +201,6 @@ class _AccountState extends State<Account> {
                                       ),
                                     )),
                                     const SizedBox(width: 5),
-                                    // Expanded(
-                                    //     child: Container(
-                                    //       color: kForeForegroundColor,
-                                    //       child: Column(
-                                    //         mainAxisAlignment:
-                                    //         MainAxisAlignment.spaceEvenly,
-                                    //         children: const [
-                                    //           Icon(
-                                    //             CupertinoIcons.timer,
-                                    //             size: 35,
-                                    //             color: kIconColor,
-                                    //           ),
-                                    //           Text(
-                                    //             '00:00 hr',
-                                    //             style: TextStyle(
-                                    //                 fontSize: kMediumFont,
-                                    //                 fontWeight: FontWeight.bold,
-                                    //                 color: kForegroundColor),
-                                    //           )
-                                    //         ],
-                                    //       ),
-                                    //     )),
-                                    // const SizedBox(width: 5),
                                     Expanded(
                                         child: Container(
                                       color: kForeForegroundColor,

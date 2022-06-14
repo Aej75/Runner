@@ -58,53 +58,5 @@ class MyApp extends StatelessWidget {
     });
   }
 }
-// return CupertinoApp(
-//   debugShowCheckedModeBanner: false,
-//   home: HomePage(),
-// );
-
-// home: Runner(auth: Auth(),));
-// (auth: Auth()),
-// theme: ThemeData.dark().copyWith(
-// // platform: TargetPlatform.iOS,
-// primaryColor: Colors.white,
-// scaffoldBackgroundColor: Colors.black,)
-// );
-
-// class HomePage extends StatelessWidget {
-//   const HomePage({Key? key}) : super(key: key);
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return CupertinoTabScaffold(
-//         tabBar: CupertinoTabBar(
-//           items: const <BottomNavigationBarItem>[
-//             BottomNavigationBarItem(icon: Icon(CupertinoIcons.home),),
-//             BottomNavigationBarItem(icon: Icon(Icons.assessment_rounded),),
-//             BottomNavigationBarItem(icon: Icon(Icons.directions_run),),
-//             BottomNavigationBarItem(icon: Icon(CupertinoIcons.bell),),
-//             BottomNavigationBarItem(icon: Icon(CupertinoIcons.person),),
-//
-//       ],
-//     ),
-//     tabBuilder: (BuildContext context, int index) {
-//           switch(index){
-//             case  0:
-//               return CupertinoTabView(builder: (context){
-//                 return CupertinoPageScaffold(child: Login(auth: Auth()),);
-//               });
-//             case  1:
-//               return CupertinoTabView(builder: (context){
-//                 return const CupertinoPageScaffold(child: MapSample(),);
-//               });
-//             default: return CupertinoTabView(builder: (context){
-//               return CupertinoPageScaffold(child: Login(auth: Auth(),),);
-//             },);
-//           }
-//     },
-//
-//     );
-//   }
-// }
 
 enum FormType { login, register }
